@@ -21,14 +21,14 @@ as I've used Leonardos for similar projects.
 
 == Step 1: Installation
 
-This needs the MidiUSB and Keyboard libraries.
-
-Installing those is documented all over the Internet.
-
 If Arduino Create still exists when you're reading this,
 you might be able to
 [load up my project](https://create.arduino.cc/editor/neale/f94bb765-47bd-4bc4-9cbf-b978f7124bdc)
 and program your board without too much fuss.
+
+Otherwise you are going to need to install the MidiUSB and Keyboard libraries.
+These are highly popular libraries,
+and there is much better documentation elsewhere on the Internet.
 
 
 == Step 2: Assmble the circuit
