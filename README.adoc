@@ -1,0 +1,153 @@
+:Author: neale
+:Email: neale@woozle.org
+:Date: 2020-May-3
+:Revision: 1
+:License: MIT
+
+= Project: USB Morse Adapter
+
+This translates Morse key inputs into USB events,
+either MIDI or MIDI+Keyboard,
+so you can use a computer.
+
+I use this with an Internet morse code repeater I wrote,
+available at https://vail.woozle.org/.
+
+This project requires an Arduino that can send USB.
+I've only used the Micro,
+although I have no doubt the Leonardo will work too,
+as I've used Leonardos for similar projects.
+
+
+== Step 1: Installation
+
+This needs the MidiUSB and Keyboard libraries.
+
+Installing those is documented all over the Internet.
+I'm using https://create.arduino.cc/ so this is all magic for me.
+
+
+== Step 2: Assmble the circuit
+
+Morse code keyers are very simple devices, 
+they just connect two wires together.
+You could use a button if you wanted to,
+or even touch wires together.
+
+The only real complication here is that some browsers
+need to get keyboard events instead of musical instrument events.
+
+
+=== Decide what browser you're going to use
+
+Firefox needs a jumper between pin 9 and ground.
+Just take a wire, and connect pin 9 directly to ground.
+This puts the Arduino into "keyboard mode",
+where it sends a comma for straight key,
+and period and slash for iambic.
+
+If you don't connect pin 9 to ground,
+the Arudino only sends MIDI (Musical Instrument Digital Interface)
+events, so it looks like you hooked a piano up.
+This works great in Chrome,
+and lets you switch to other windows while still keying into vail.
+
+=== Wire up your input device
+
+Hook a straight key into ground on one side,
+pin 10 on the other.
+It's okay to leave pin 10 disconnected if you don't have a straight key.
+
+Hook an iambic paddle in ground in the middle,
+pins 11 and 12 on the outside posts.
+It's okay to leave pins 11 and 12 disconnected if you don't have a paddle.
+
+=== Using a headphone jack
+
+If you prefer, you can wire a headphone jack up to GND, 11, and 12.
+GND should be the sleeve, 11 the ring, and 12 the tip.
+
+   o  --- 12
+  |_| --- 11
+  | | --- GND
+  | |
+
+Make sure any straight key you plug in has a TS adapter (mono plug):
+this will short pin 11 to ground and signal to the Arduino to 
+go into straight key mode.
+
+You need to reset the Arduino if you change from an iambic to straight key.
+On the micro, reset is a white button.
+
+If you plug in your straight key and it looks like DAH is being held down,
+it means you need to switch the connections to pins 11 and 12.
+
+If you plug in your straight key and it looks like DIT is being held down,
+it means you need to reset the Arduino to make it detect the key type again.
+
+
+== Step 3: Load the code
+
+Upload the code contained in this sketch on to your board.
+
+== Step 4: Test it out
+
+Make sure it's plugged in to your computer's USB port.
+
+If you connected pin 9 to ground,
+Open anything where you can type,
+type in "hello", and hit the straight key.
+You should see a comma after your hello.
+
+Now you can open https://vail.woozle.org/,
+click the "KEY" button once to let the browser know it's okay to make sound,
+and you should be able to wail away on your new USB keyer.
+
+
+=== License
+
+This project is released under an MIT License.
+
+Copyright © 2020 Neale Pickett
+Copyright © 2013 thomasfredericks
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+The software is provided "as is", without warranty of any kind, express or
+implied, including but not limited to the warranties of merchantability, fitness
+for a particular purpose, and noninfringement. In no event shall the authors or
+copyright holders be liable for any claim, damages, or other liability, whether
+in an action of contract, tort or otherwise, arising from, out of, or in
+connection with the software or the use or other dealings in the software.
+
+
+=== Contributing
+To contribute to this project please contact neale@woozle.org
+https://id.arduino.cc/neale
+
+
+=== BOM
+
+In addition to a key, some hookup wires, and a USB cable,
+you only need an Arduino.
+
+|===
+| ID | Part name      | Part number | Quantity
+| A1 | Arduino Micro  | ABX00053    | 1
+|===
+
+
+=== Help
+
+This document is written in the _AsciiDoc_ format, a markup language to describe documents.
+If you need help you can search the http://www.methods.co.nz/asciidoc[AsciiDoc homepage]
+or consult the http://powerman.name/doc/asciidoc[AsciiDoc cheatsheet]
+
