@@ -22,8 +22,8 @@ as I've used Leonardos for similar projects.
 == Step 1: Installation
 
 If Arduino Create still exists when you're reading this,
-you might be able to
-[load up my project](https://create.arduino.cc/editor/neale/f94bb765-47bd-4bc4-9cbf-b978f7124bdc)
+you might be able to load up
+https://create.arduino.cc/editor/neale/f94bb765-47bd-4bc4-9cbf-b978f7124bdc[My Project]
 and program your board without too much fuss.
 
 Otherwise you are going to need to install the MidiUSB and Keyboard libraries.
