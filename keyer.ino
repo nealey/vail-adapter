@@ -1,3 +1,7 @@
+// Copyright 2020 Neale Pickett
+// Distributed under the MIT license
+// Please see https://github.com/nealey/vail-adapter/
+
 // MIDIUSB - Version: Latest 
 #include <MIDIUSB.h>
 #include <Keyboard.h>
