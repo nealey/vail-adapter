@@ -1,4 +1,4 @@
-This project is released under an MIT License.
+MIT License
 
 Copyright © 2020 Neale Pickett
 Copyright © 2013 thomasfredericks
