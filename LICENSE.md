@@ -1,7 +1,7 @@
 MIT License
 
-Copyright © 2020 Neale Pickett
-Copyright © 2013 thomasfredericks
+Copyright © 2020 Neale Pickett  
+Copyright © 2013 thomasfredericks  
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
