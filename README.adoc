@@ -33,6 +33,14 @@ and there is much better documentation elsewhere on the Internet.
 
 == Step 2: Assmble the circuit
 
+=== For the impatient:
+
+https://github.com/nealey/vail-adapter/wiki[Photos of assembled circuit]
+
+Remember to jump pin 9 to ground for Firefox.
+
+=== For the inquisitive:
+
 Morse code keyers are very simple devices, 
 they just connect two wires together.
 You could use a button if you wanted to,
