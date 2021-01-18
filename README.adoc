@@ -77,7 +77,7 @@ Firefox needs a jumper between pin 9 and ground.
 Just take a wire, and connect pin 9 directly to ground.
 This puts the Arduino into "keyboard mode",
 where it sends a comma for straight key,
-and period and slash for iambic.
+and brackets for iambic.
 
 If you don't connect pin 9 to ground,
 the Arudino only sends MIDI (Musical Instrument Digital Interface)
