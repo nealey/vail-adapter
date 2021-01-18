@@ -13,8 +13,8 @@
 #define KBD_PIN 9
 
 #define STRAIGHT_KEY ','
-#define DIT_KEY '.'
-#define DAH_KEY '/'
+#define DIT_KEY '['
+#define DAH_KEY ']'
 
 bool iambic = true;
 Bounce kbd = Bounce();
