@@ -14,12 +14,29 @@ so you can use a computer.
 
 I use this with an Internet morse code repeater I wrote,
 available at https://vail.woozle.org/.
+It will also work with [VBand](https://hamradio.solutions/vband/).
 
 This project requires an Arduino that can send USB.
-I've only used the Micro,
-although I have no doubt the Leonardo will work too,
-as I've used Leonardos for similar projects.
+The following should work:
 
+=== Verified Working
+
+* Seeeduino Xiao
+* Arduino Micro
+* KeeYees Pro Micro
+
+=== Unverified but should work
+
+Any USB-capable Arduino should be fine, including:
+
+* Arduino Leonardo
+* Arduino Zero
+* Adafruit Trinket M0
+* Adafruit GEMMA M0
+* Adafruit Feather M0
+
+You might even be able to get a Digispark (attiny85) to work,
+but this may require a little hacking. Send me a patch, if you do!
 
 == Step 1: Installation
 
@@ -151,7 +168,11 @@ https://id.arduino.cc/neale
 === BOM
 
 In addition to a key, some hookup wires, and a USB cable,
-you only need an Arduino.
+you only need a USB-capable Arduino: see above.
+
+Since I don't know what might try to parse this section,
+I'm calling for an Arduino Micro. But, really, many options
+will work fine.
 
 |===
 | ID | Part name      | Part number | Quantity
