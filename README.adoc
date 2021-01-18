@@ -6,6 +6,8 @@
 
 = Project: USB Morse Adapter
 
+image:https://lh3.googleusercontent.com/pw/ACtC-3d9xbLxL23QeLm-3gy3-Yt0VHE3IlQ-qyMDqTfdF6Bo7fHkkokACdIs68pmXevu14VzrrCeKj1JmRUiekUNiZe9J9rYIh_pTagvCbKSzpY8Ynp1m6cF4G_jTvtiU5eRtoNCsmU5OLy2SR9kYcCDYSt-AA=s1471-no["Vail adapter, assembled and connected",width=300,https://lh3.googleusercontent.com/pw/ACtC-3d9xbLxL23QeLm-3gy3-Yt0VHE3IlQ-qyMDqTfdF6Bo7fHkkokACdIs68pmXevu14VzrrCeKj1JmRUiekUNiZe9J9rYIh_pTagvCbKSzpY8Ynp1m6cF4G_jTvtiU5eRtoNCsmU5OLy2SR9kYcCDYSt-AA=s1471-no]
+
 This translates Morse key inputs into USB events,
 either MIDI or MIDI+Keyboard,
 so you can use a computer.
@@ -32,6 +34,14 @@ and there is much better documentation elsewhere on the Internet.
 
 
 == Step 2: Assmble the circuit
+
+=== For the impatient:
+
+https://github.com/nealey/vail-adapter/wiki[Photos of assembled circuit]
+
+Remember to jump pin 9 to ground for Firefox.
+
+=== For the inquisitive:
 
 Morse code keyers are very simple devices, 
 they just connect two wires together.
