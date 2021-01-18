@@ -7,9 +7,16 @@
 #include <Keyboard.h>
 #include "bounce2.h"
 
+#ifdef ARDUINO_SEEED_XIAO_M0
+#define DIT_PIN 2
+#define DAH_PIN 1
+#define KEY_PIN 0
+#else
 #define DIT_PIN 12
 #define DAH_PIN 11
 #define KEY_PIN 10
+#endif
+
 #define KBD_PIN 9
 
 #define STRAIGHT_KEY ','
