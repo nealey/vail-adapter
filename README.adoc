@@ -14,7 +14,7 @@ so you can use a computer.
 
 I use this with an Internet morse code repeater I wrote,
 available at https://vail.woozle.org/.
-It will also work with [VBand](https://hamradio.solutions/vband/),
+It will also work with VBand (https://hamradio.solutions/vband/),
 in MIDI+Keyboard mode.
 
 This project requires an Arduino that can send USB.
