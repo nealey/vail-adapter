@@ -52,11 +52,13 @@ I'm trying to convince Michele Giugliano to try :)
 
 #### The Easy Way
 
-I plan to begin releasing precompiled images for the Seeeduino XIAO.
-You should be able to
-[enter bootloader mode](https://wiki.seeedstudio.com/Seeeduino-XIAO/#enter-bootloader-mode)
-and just drag the `.uf2` file onto the new drive it provides,
-then you're done.
+1. Get a Seeeduino XIAO
+2. Download the most recent xiao firmware from
+[releases](https://github.com/nealey/vail-adapter/releases)
+3. [Enter bootloader mode](https://wiki.seeedstudio.com/Seeeduino-XIAO/#enter-bootloader-mode)
+4. Copy the firmware onto the XIAO
+
+A longer write-up is [on the wiki](https://github.com/nealey/vail-adapter/wiki/Flashing-firmware).
 
 #### The Other Way
 
