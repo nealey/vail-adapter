@@ -1,32 +1,33 @@
-:Author: neale
-:Email: neale@woozle.org
-:Date: 2020-May-3
-:Revision: 1
-:License: MIT
+---
+Author: neale
+Email: neale@woozle.org
+License: MIT
+---
 
-= Project: USB Morse Adapter
+# Project: USB Morse Adapter
 
-image:https://lh3.googleusercontent.com/pw/ACtC-3d9xbLxL23QeLm-3gy3-Yt0VHE3IlQ-qyMDqTfdF6Bo7fHkkokACdIs68pmXevu14VzrrCeKj1JmRUiekUNiZe9J9rYIh_pTagvCbKSzpY8Ynp1m6cF4G_jTvtiU5eRtoNCsmU5OLy2SR9kYcCDYSt-AA=s1471-no["Vail adapter, assembled and connected",width=300,https://lh3.googleusercontent.com/pw/ACtC-3d9xbLxL23QeLm-3gy3-Yt0VHE3IlQ-qyMDqTfdF6Bo7fHkkokACdIs68pmXevu14VzrrCeKj1JmRUiekUNiZe9J9rYIh_pTagvCbKSzpY8Ynp1m6cF4G_jTvtiU5eRtoNCsmU5OLy2SR9kYcCDYSt-AA=s1471-no]
+![Vail adapter, assembled and connected](https://lh3.googleusercontent.com/pw/ACtC-3d9xbLxL23QeLm-3gy3-Yt0VHE3IlQ-qyMDqTfdF6Bo7fHkkokACdIs68pmXevu14VzrrCeKj1JmRUiekUNiZe9J9rYIh_pTagvCbKSzpY8Ynp1m6cF4G_jTvtiU5eRtoNCsmU5OLy2SR9kYcCDYSt-AA=s1471-no)
 
 This translates Morse key inputs into USB events,
 either MIDI or MIDI+Keyboard,
 so you can use a computer.
 
+It is fully compatible with [VBand](https://hamradio.solutions/vband/)
+and anything else that uses the VBand adapter.
+
 I use this with an Internet morse code repeater I wrote,
 available at https://vail.woozle.org/.
-It will also work with [VBand](https://hamradio.solutions/vband/),
-in MIDI+Keyboard mode.
 
 This project requires an Arduino that can send USB.
 The following should work:
 
-=== Verified Working
+### Verified Working
 
-* Seeeduino Xiao
+* Seeeduino Xiao **(recommended)**
 * Arduino Micro
 * KeeYees Pro Micro
 
-=== Unverified but should work
+### Unverified but should work
 
 Any USB-capable Arduino should be fine, including:
 
@@ -39,28 +40,30 @@ Any USB-capable Arduino should be fine, including:
 You might even be able to get a Digispark (attiny85) to work,
 but this may require a little hacking. Send me a patch, if you do!
 
-== Step 1: Installation
+## Step 1: Installation
 
-If Arduino Create still exists when you're reading this,
-you might be able to load up
-https://create.arduino.cc/editor/neale/f94bb765-47bd-4bc4-9cbf-b978f7124bdc[my project]
-and program your board without too much fuss.
+#### The Easy Way
 
-Otherwise you are going to need to install the MidiUSB and Keyboard libraries.
+I plan to begin releasing precompiled images for the Seeeduino XIAO.
+You should be able to
+[enter bootloader mode](https://wiki.seeedstudio.com/Seeeduino-XIAO/#enter-bootloader-mode)
+and just drag the `.uf2` file onto the new drive it provides,
+then you're done.
+
+#### The Other Way
+
+Install the MidiUSB and Keyboard libraries.
 These are highly popular libraries,
 and there is much better documentation elsewhere on the Internet.
+The code should then build in the Arduino IDE.
 
+## Step 2: Assmble the circuit
 
-== Step 2: Assmble the circuit
+### For the impatient:
 
-=== For the impatient:
+[Photos of assembled circuit](https://github.com/nealey/vail-adapter/wiki)
 
-https://github.com/nealey/vail-adapter/wiki[Photos of assembled circuit]
-
-Remember to jump pin 9 to ground for Firefox,
-or VBand.
-
-=== For the inquisitive:
+### For the inquisitive:
 
 Morse code keyers are very simple devices, 
 they just connect two wires together.
@@ -70,22 +73,21 @@ or even touch wires together.
 The only real complication here is that some browsers
 need to get keyboard events instead of musical instrument events.
 
+The Vail adapter boots into a mode that sends both keyboard events
+and MIDI messages. 
+If it receives a MIDI key release event
+on channel 0
+for note C0,
+it will disable keyboard events.
 
-=== Decide what browser you're going to use
+Vail sends this "disable keyboard" MIDI event, so as soon as you
+load up Vail, the keyboard events are disabled, and your adapter
+will no longer interfere with your typing.
+If your browser doesn't support MIDI, 
+the disable command can't be sent,
+and it keeps on sending keystrokes.
 
-Firefox needs a jumper between pin 9 and ground.
-Just take a wire, and connect pin 9 directly to ground.
-This puts the Arduino into "keyboard mode",
-where it sends a comma for straight key,
-and brackets for iambic.
-
-If you don't connect pin 9 to ground,
-the Arudino only sends MIDI (Musical Instrument Digital Interface)
-events, so it looks like you hooked a piano up.
-This works great in Chrome,
-and lets you switch to other windows while still keying into vail.
-
-=== Wire up your input device
+### Wire up your input device
 
 Hook a straight key into ground on one side,
 pin 10 on the other.
@@ -109,21 +111,15 @@ Make sure any straight key you plug in has a TS adapter (mono plug):
 this will short pin 11 to ground and signal to the Arduino to 
 go into straight key mode.
 
-You need to reset the Arduino if you change from an iambic to straight key.
-On the micro, reset is a white button.
-
-If you plug in your straight key and it looks like DAH is being held down,
-it means you need to switch the connections to pins 11 and 12.
-
-If you plug in your straight key and it looks like DIT is being held down,
-it means you need to reset the Arduino to make it detect the key type again.
+If you change from an iambic key to a straight key,
+you'll have to reset the adapter by unplugging it from the computer.
 
 
-== Step 3: Load the code
+## Step 3: Load the code
 
 Upload the code contained in this sketch on to your board.
 
-== Step 4: Test it out
+## Step 4: Test it out
 
 Make sure it's plugged in to your computer's USB port.
 
@@ -136,8 +132,16 @@ Now you can open https://vail.woozle.org/,
 click the "KEY" button once to let the browser know it's okay to make sound,
 and you should be able to wail away on your new USB keyer.
 
+## Step 5: Debugging
 
-=== License
+If you plug in your straight key and it looks like DAH is being held down,
+it means you need to switch the connections to pins 11 and 12.
+
+If you plug in your straight key and it looks like DIT is being held down,
+it means you need to reset the Arduino to make it detect the key type again.
+
+
+# License
 
 This project is released under an MIT License.
 
@@ -162,12 +166,12 @@ in an action of contract, tort or otherwise, arising from, out of, or in
 connection with the software or the use or other dealings in the software.
 
 
-=== Contributing
+# Contributing
 To contribute to this project please contact neale@woozle.org
 https://id.arduino.cc/neale
 
 
-=== BOM
+# BOM
 
 In addition to a key, some hookup wires, and a USB cable,
 you only need a USB-capable Arduino: see above.
@@ -176,15 +180,6 @@ Since I don't know what might try to parse this section,
 I'm calling for an Arduino Micro. But, really, many options
 will work fine.
 
-|===
-| ID | Part name      | Part number | Quantity
-| A1 | Arduino Micro  | ABX00053    | 1
-|===
-
-
-=== Help
-
-This document is written in the _AsciiDoc_ format, a markup language to describe documents.
-If you need help you can search the http://www.methods.co.nz/asciidoc[AsciiDoc homepage]
-or consult the http://powerman.name/doc/asciidoc[AsciiDoc cheatsheet]
-
+| ID | Part name      | Part number | Quantity |
+| --- | ------- | ------ | ------ |
+| A1 | Seeeduino XIAO | 102010328    | 1 |

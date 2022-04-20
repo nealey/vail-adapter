@@ -8,30 +8,27 @@
 #include "bounce2.h"
 
 #ifdef ARDUINO_SEEED_XIAO_M0
-#define DIT_PIN 2
-#define DAH_PIN 1
-#define KEY_PIN 0
+#  define DIT_PIN 2
+#  define DAH_PIN 1
+#  define KEY_PIN 0
 #else
-#define DIT_PIN 12
-#define DAH_PIN 11
-#define KEY_PIN 10
+#  define DIT_PIN 12
+#  define DAH_PIN 11
+#  define KEY_PIN 10
 #endif
 
-#define KBD_PIN 9
-
 #define STRAIGHT_KEY ','
-#define DIT_KEY '['
-#define DAH_KEY ']'
+#define DIT_KEY KEY_LEFT_CTRL
+#define DAH_KEY KEY_RIGHT_CTRL
 
 bool iambic = true;
-Bounce kbd = Bounce();
+bool keyboard = true;
 Bounce dit = Bounce();
 Bounce dah = Bounce();
 Bounce key = Bounce();
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
-  kbd.attach(KBD_PIN, INPUT_PULLUP);
   dit.attach(DIT_PIN, INPUT_PULLUP);
   dah.attach(DAH_PIN, INPUT_PULLUP);
   key.attach(KEY_PIN, INPUT_PULLUP);
@@ -49,8 +46,13 @@ void setup() {
   } else {
     iambic = true;
   }
-  
-  digitalWrite(LED_BUILTIN, !iambic);
+
+  // Blink 4 times
+  for (int i = 0; i < 8; i += 1) {
+    digitalWrite(LED_BUILTIN, i % 2);
+    delay(250);
+  }
+
 }
 
 void midiKey(bool down, uint8_t key) {
@@ -59,11 +61,20 @@ void midiKey(bool down, uint8_t key) {
   MidiUSB.flush();
 }
 
+void midiProbe() {
+  midiEventPacket_t event = MidiUSB.read();
+  if (event.byte1 == 0x80) { 
+    // Key release, channel 0
+    if (event.byte2 == 0x00) { 
+      // C0 note
+      keyboard = false;
+    }
+  }  
+}
+
 void loop() {
-  bool keyboard;
-  
-  kbd.update();
-  keyboard = !kbd.read();
+  midiProbe();
+  digitalWrite(LED_BUILTIN, !keyboard);
 
   // Monitor straight key pin
   if (key.update()) {
