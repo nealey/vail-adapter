@@ -37,8 +37,16 @@ Any USB-capable Arduino should be fine, including:
 * Adafruit GEMMA M0
 * Adafruit Feather M0
 
-You might even be able to get a Digispark (attiny85) to work,
-but this may require a little hacking. Send me a patch, if you do!
+It may also be possible to get this working on a DigiSpark.
+I'm trying to convince Michele Giugliano to try :)
+
+=== Similar projects
+
+* Vail user Michele Giugliano's [MorsePaddle2USB](https://github.com/mgiugliano/MorsePaddle2USB),
+  which runs on a DigiSpark (attiny85). It only sends keystrokes, so you must keep the Vail
+  window focused: you can't switch to other apps and still transimit.
+* Ham Radio Solutions sells a [USB Paddle Interface](https://hamradio.solutions/vband/)
+  which appears to be very similar to Michele's project. You must keep the Vail window focused.
 
 ## Step 1: Installation
 
@@ -102,10 +110,10 @@ It's okay to leave pins 11 and 12 disconnected if you don't have a paddle.
 If you prefer, you can wire a headphone jack up to GND, 11, and 12.
 GND should be the sleeve, 11 the ring, and 12 the tip.
 
-   o  --- 12
-  |_| --- 11
-  | | --- GND
-  | |
+     o  --- 12
+    |_| --- 11
+    | | --- GND
+    | |
 
 Make sure any straight key you plug in has a TS adapter (mono plug):
 this will short pin 11 to ground and signal to the Arduino to 
