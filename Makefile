@@ -3,8 +3,8 @@ UF2_MOUNT = /mnt/chromeos/removable/Arduino
 ARDUINO_DIR = /app/Arduino
 BUILDER = flatpak run --command ${ARDUINO_DIR}/arduino-builder cc.arduino.arduinoide
 
-default: build/vail-adapter.ino.uf2
-install: build/vail-adapter.ino.uf2
+default: build/vail-adapter.xiao.uf2
+install: build/vail-adapter.xiao.uf2
 	./install.sh $< $(UF2_MOUNT) 
 
 # uf2conv.py is covered by an MIT license.
@@ -16,7 +16,7 @@ build/uf2families.json:
 	mkdir -p build
 	curl -L https://raw.githubusercontent.com/microsoft/uf2/master/utils/$(@F) > $@
 
-%.uf2: %.bin build/uf2conv.py
+%.xiao.uf2: %.ino.bin build/uf2conv.py
 	build/uf2conv.py -b 0x2000 -c -o $@ $<
 
 build/%.bin: % *.cpp *.h
