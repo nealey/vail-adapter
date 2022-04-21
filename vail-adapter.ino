@@ -11,11 +11,14 @@
 #  define DIT_PIN 2
 #  define DAH_PIN 1
 #  define KEY_PIN 0
+#  define LED_ON false
 #else
 #  define DIT_PIN 12
 #  define DAH_PIN 11
 #  define KEY_PIN 10
+#  define LED_ON true
 #endif
+#define LED_OFF (!LED_ON)
 
 #define STRAIGHT_KEY ','
 #define DIT_KEY KEY_LEFT_CTRL
@@ -39,6 +42,7 @@ void setup() {
   // The easiest way I can think of to do this is to use a TS connector
   // instead of a TRS connector.
   for (int i = 0; i < 16; i++) {
+    delay(20);
     dah.update();
   }
   if (dah.read() == LOW) {
@@ -47,12 +51,11 @@ void setup() {
     iambic = true;
   }
 
-  // Blink 4 times
-  for (int i = 0; i < 8; i += 1) {
-    digitalWrite(LED_BUILTIN, i % 2);
-    delay(250);
+  // Blink out a V
+  for (int i = 0; i < 4; i++) {
+    digitalWrite(LED_BUILTIN, LED_ON); delay(80 + (i/3)*160);
+    digitalWrite(LED_BUILTIN, LED_OFF); delay(80 + (i/3)*160);
   }
-
 }
 
 void midiKey(bool down, uint8_t key) {
@@ -74,7 +77,7 @@ void midiProbe() {
 
 void loop() {
   midiProbe();
-  digitalWrite(LED_BUILTIN, !keyboard);
+  digitalWrite(LED_BUILTIN, keyboard?LED_ON:LED_OFF);
 
   // Monitor straight key pin
   if (key.update()) {
