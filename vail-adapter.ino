@@ -141,7 +141,7 @@ void loop() {
       if (dit.fell()) {
         Keyboard.press(DIT_KEY);
       } else {
-        Keyboard.release(DAH_KEY);
+        Keyboard.release(DIT_KEY);
       }
     }
   }
