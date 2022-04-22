@@ -17,7 +17,7 @@
 #  define DIT_PIN 12
 #  define DAH_PIN 11
 #  define KEY_PIN 10
-#  define PIEZO 8
+#  define PIEZO 7
 #  define LED_ON true
 #endif
 #define LED_OFF (!LED_ON)
@@ -97,6 +97,12 @@ void midiProbe() {
     keyboard = (event.byte3 > 0x3f);
     break;
   case 0x8B01: // Controller 1: set iambic speed (0-254)
+    // I am probably never going to use this,
+    // because as soon as I implement it,
+    // people are going to want a way to select mode A or B,
+    // or typeahead,
+    // or some other thing that I don't want to maintain
+    // simultaneously in both C and JavaScript
     iambicDelay = event.byte3 << 1;
     break;
   }

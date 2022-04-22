@@ -124,6 +124,18 @@ go into straight key mode.
 If you change from an iambic key to a straight key,
 you'll have to reset the adapter by unplugging it from the computer.
 
+### Optional: buzzer
+
+If you connect a buzzer or speaker to pin 7 on one leg,
+and ground on the other,
+the adapter will beep when you press the straight key.
+
+This will help a lot if there is a noticeable delay between when you press the key
+and when your computer starts making a local beeping sound.
+
+If you feel like no matter what you do,
+you're always getting DAH with your straight key,
+you should try this.
 
 ## Step 3: Load the code
 
