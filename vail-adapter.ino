@@ -56,6 +56,7 @@ void setup() {
   }
   if (dah.read() == LOW) {
     trs = true;
+    key = dit;
   }
 }
 
