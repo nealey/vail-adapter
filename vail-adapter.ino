@@ -5,27 +5,23 @@
 // MIDIUSB - Version: Latest 
 #include <MIDIUSB.h>
 #include <Keyboard.h>
+#include <Adafruit_FreeTouch.h>
 #include "bounce2.h"
+#include "touchbounce.h"
 
-#ifdef ARDUINO_SEEED_XIAO_M0
-#  define DIT_PIN 2
-#  define DAH_PIN 1
-#  define KEY_PIN 0
-#  define PIEZO 7
-#  define LED_ON false
-#else
-#  define DIT_PIN 12
-#  define DAH_PIN 11
-#  define KEY_PIN 10
-#  define PIEZO 7
-#  define LED_ON true
-#endif
+#define DIT_PIN 2
+#define DAH_PIN 1
+#define KEY_PIN 0
+#define QT_DIT_PIN A6
+#define QT_DAH_PIN A7
+#define QT_KEY_PIN A8
+#define PIEZO 10
+#define LED_ON false // Xiao inverts this logic for some reason
 #define LED_OFF (!LED_ON)
 
-#define STRAIGHT_KEY ','
 #define DIT_KEY KEY_LEFT_CTRL
 #define DAH_KEY KEY_RIGHT_CTRL
-#define TONE 660
+#define TONE 550
 
 #define MILLISECOND 1
 #define SECOND (1 * MILLISECOND)
@@ -36,6 +32,9 @@ uint16_t iambicDelay = 80 * MILLISECOND;
 Bounce dit = Bounce();
 Bounce dah = Bounce();
 Bounce key = Bounce();
+TouchBounce qt_dit = TouchBounce();
+TouchBounce qt_dah = TouchBounce();
+TouchBounce qt_key = TouchBounce();
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -43,7 +42,10 @@ void setup() {
   dit.attach(DIT_PIN, INPUT_PULLUP);
   dah.attach(DAH_PIN, INPUT_PULLUP);
   key.attach(KEY_PIN, INPUT_PULLUP);
-  
+  qt_dit.attach(QT_DIT_PIN);
+  qt_dah.attach(QT_DAH_PIN);
+  qt_key.attach(QT_KEY_PIN);
+
   Keyboard.begin();
 
   // To auto-sense a straight key in a TRRS jack,
@@ -114,18 +116,13 @@ void loop() {
   setLED();
 
   // Monitor straight key pin
-  if (key.update()) {
-    midiKey(key.fell(), 0);
-    if (key.fell()) {
+  if (key.update() || qt_key.update()) {
+    bool fell = key.fell() || qt_key.fell();
+    midiKey(fell, 0);
+    if (fell) {
       tone(PIEZO, TONE);
-      if (keyboard) {
-        Keyboard.press(STRAIGHT_KEY);
-      }
     } else {
       noTone(PIEZO);
-      if (keyboard) {
-        Keyboard.release(STRAIGHT_KEY);
-      }
     }
   }
 
@@ -135,10 +132,11 @@ void loop() {
     return;
   }
 
-  if (dit.update()) {
-    midiKey(dit.fell(), 1);
+  if (dit.update() || qt_dit.update()) {
+    bool fell = dit.fell() || qt_dit.fell();
+    midiKey(fell, 1);
     if (keyboard) {
-      if (dit.fell()) {
+      if (fell) {
         Keyboard.press(DIT_KEY);
       } else {
         Keyboard.release(DIT_KEY);
@@ -147,11 +145,12 @@ void loop() {
   }
   
   // Monitor dah pin
-  if (dah.update()) {
-    midiKey(dah.fell(), 2);
+  if (dah.update() || qt_dah.update()) {
+    bool fell = dah.fell() || qt_dah.fell();
+    midiKey(fell, 2);
     
     if (keyboard) {
-      if (dah.fell()) {
+      if (fell) {
         Keyboard.press(DAH_KEY);
       } else {
         Keyboard.release(DAH_KEY);
