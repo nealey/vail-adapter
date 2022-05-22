@@ -49,7 +49,7 @@ GND should be the sleeve, D1 the ring, and D2 the tip.
     | | --- GND (sleeve)
     | |
 
-# Sidetone generator
+## Sidetone generator
 
 If you connect a buzzer or speaker to pin 10 on one leg,
 and ground on the other,
@@ -63,7 +63,7 @@ you're always getting DAH with your straight key,
 you should try this.
 
 
-# Capacative Touch
+## Capacative Touch
 
 The adapter works as a capacative touch sensor,
 like a touch lamp.
