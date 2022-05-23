@@ -8,6 +8,7 @@
 #include <Adafruit_FreeTouch.h>
 #include "bounce2.h"
 #include "touchbounce.h"
+#include "adapter.h"
 
 #define DIT_PIN 2
 #define DAH_PIN 1
@@ -19,8 +20,8 @@
 #define LED_ON false // Xiao inverts this logic for some reason
 #define LED_OFF (!LED_ON)
 
-#define DIT_KEY KEY_LEFT_CTRL
-#define DAH_KEY KEY_RIGHT_CTRL
+#define DIT_KEYBOARD_KEY KEY_LEFT_CTRL
+#define DAH_KEYBOARD_KEY KEY_RIGHT_CTRL
 #define TONE 550
 
 #define MILLISECOND 1
@@ -35,10 +36,10 @@ Bounce key = Bounce();
 TouchBounce qt_dit = TouchBounce();
 TouchBounce qt_dah = TouchBounce();
 TouchBounce qt_key = TouchBounce();
+VailAdapter adapter = VailAdapter(PIEZO);
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(PIEZO, OUTPUT);
   dit.attach(DIT_PIN, INPUT_PULLUP);
   dah.attach(DAH_PIN, INPUT_PULLUP);
   key.attach(KEY_PIN, INPUT_PULLUP);
@@ -85,76 +86,33 @@ void setLED() {
   digitalWrite(LED_BUILTIN, on?LED_ON:LED_OFF);
 }
 
-void midiKey(bool down, uint8_t key) {
-  midiEventPacket_t event = {down?9:8, down?0x90:0x80, key, 0x7f};
-  MidiUSB.sendMIDI(event);
-  MidiUSB.flush();
-}
-
-void midiProbe() {
-  midiEventPacket_t event = MidiUSB.read();
-
-  uint16_t msg = (event.byte1 << 8) | (event.byte2 << 0);
-  switch (msg) {
-  case 0x8B00: // Controller 0: turn keyboard mode on/off
-    keyboard = (event.byte3 > 0x3f);
-    break;
-  case 0x8B01: // Controller 1: set iambic speed (0-254)
-    // I am probably never going to use this,
-    // because as soon as I implement it,
-    // people are going to want a way to select mode A or B,
-    // or typeahead,
-    // or some other thing that I don't want to maintain
-    // simultaneously in both C and JavaScript
-    iambicDelay = event.byte3 << 1;
-    break;
-  }
-}
-
 void loop() {
-  midiProbe();
+  midiEventPacket_t event = MidiUSB.read();
   setLED();
+
+  if (event.header) {
+    adapter.HandleMIDI(event);
+  }
 
   // Monitor straight key pin
   if (key.update() || qt_key.update()) {
-    bool fell = key.fell() || qt_key.fell();
-    midiKey(fell, 0);
-    if (fell) {
-      tone(PIEZO, TONE);
-    } else {
-      noTone(PIEZO);
-    }
+    bool pressed = key.read() || qt_key.read();
+    adapter.HandlePaddle(PADDLE_STRAIGHT, pressed);
   }
 
   // If we made dit = dah, we have a straight key on the dit pin,
-  // so we skip iambic polling.
+  // so we skip other keys polling.
   if (trs) {
     return;
   }
 
   if (dit.update() || qt_dit.update()) {
-    bool fell = dit.fell() || qt_dit.fell();
-    midiKey(fell, 1);
-    if (keyboard) {
-      if (fell) {
-        Keyboard.press(DIT_KEY);
-      } else {
-        Keyboard.release(DIT_KEY);
-      }
-    }
+    bool pressed = dit.read() || qt_dit.read();
+    adapter.HandlePaddle(PADDLE_DIT, pressed);
   }
   
-  // Monitor dah pin
   if (dah.update() || qt_dah.update()) {
-    bool fell = dah.fell() || qt_dah.fell();
-    midiKey(fell, 2);
-    
-    if (keyboard) {
-      if (fell) {
-        Keyboard.press(DAH_KEY);
-      } else {
-        Keyboard.release(DAH_KEY);
-      }
-    }
+    bool pressed = dah.read() | qt_dah.read();
+    adapter.HandlePaddle(PADDLE_DAH, pressed);
   }
 }
