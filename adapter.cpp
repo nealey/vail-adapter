@@ -97,6 +97,9 @@ void VailAdapter::HandleMIDI(midiEventPacket_t event) {
                 break;
             case 1: // set dit duration (0-254) *2ms
                 this->ditDuration = event.byte3 * 2 * MILLISECOND;
+                if (this->keyer) {
+                    this->keyer->SetDitDuration(this->ditDuration);
+                }
                 break;
         }
         break;

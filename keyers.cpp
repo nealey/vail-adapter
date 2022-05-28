@@ -35,7 +35,7 @@ public:
             return;
         }
         for (int i = 0; i < arrlen; i++) {
-            if (arr[arrlen] == i) {
+            if (arr[arrlen] == val) {
                 return;
             }
         }
@@ -138,7 +138,9 @@ public:
     }
 
     void beginPulsing() {
-        this->nextPulse = 1;
+        if (!this->nextPulse) {
+            this->nextPulse = 1;
+        }
     }
 
     virtual void pulse(unsigned int millis) {
@@ -226,24 +228,19 @@ public:
 
 class UltimaticKeyer: public ElBugKeyer {
 public:
-    QSet *queue;
+    QSet queue;
     
     using ElBugKeyer::ElBugKeyer;
 
-    void Reset() {
-        ElBugKeyer::Reset();
-        this->queue = new QSet();
-    }
-
     void Key(Paddle key, bool pressed) {
         if (pressed) {
-            this->queue->add(key);
+            this->queue.add(key);
         }
         ElBugKeyer::Key(key, pressed);
     }
 
     virtual int nextTx() {
-        int key = this->queue->shift();
+        int key = this->queue.shift();
         if (key != -1) {
             return key;
         }
@@ -253,24 +250,19 @@ public:
 
 class SingleDotKeyer: public ElBugKeyer {
 public:
-    QSet *queue;
+    QSet queue;
 
     using ElBugKeyer::ElBugKeyer;
-
-    void Reset() {
-        ElBugKeyer::Reset();
-        this->queue = new QSet();
-    }
     
     void Key(Paddle key, bool pressed) {
-        if (pressed && (key == 0)) {
-            this->queue->add(key);
+        if (pressed && (key == PADDLE_DIT)) {
+            this->queue.add(key);
         }
         ElBugKeyer::Key(key, pressed);
     }
 
     virtual int nextTx() {
-        int key = this->queue->shift();
+        int key = this->queue.shift();
         if (key != -1) {
             return key;
         }
@@ -287,7 +279,7 @@ public:
 
     virtual int nextTx() {
         int next = ElBugKeyer::nextTx();
-        if (this->whichKeyPressed() != -1) {
+        if (this->keyPressed[PADDLE_DIT] && this->keyPressed[PADDLE_DAH]) {
             this->nextRepeat = 1 - this->nextRepeat;
         }
         return next;
@@ -296,25 +288,20 @@ public:
 
 class IambicAKeyer: public IambicKeyer {
 public:
-    QSet *queue;
+    QSet queue;
 
     using IambicKeyer::IambicKeyer;
     
-    void Reset() {
-        IambicKeyer::Reset();
-        this->queue = new QSet();
-    }
-
     void Key(Paddle key, bool pressed) {
-        if (pressed && (key == 0)) {
-            this->queue->add(key);
+        if (pressed && (key == PADDLE_DIT)) {
+            this->queue.add(key);
         }
         IambicKeyer::Key(key, pressed);
     }
 
     virtual int nextTx() {
         int next = IambicKeyer::nextTx();
-        int key = this->queue->shift();
+        int key = this->queue.shift();
         if (key != -1) {
             return key;
         }
@@ -324,30 +311,29 @@ public:
 
 class IambicBKeyer: public IambicKeyer {
 public:
-    QSet *queue;
+    QSet queue;
 
     using IambicKeyer::IambicKeyer;
 
     void Reset() {
         IambicKeyer::Reset();
-        this->queue = new QSet();
     }
 
     void Key(Paddle key, bool pressed) {
         if (pressed) {
-            this->queue->add(key);
+            this->queue.add(key);
         }
         IambicKeyer::Key(key, pressed);
     }
 
     virtual int nextTx() {
-        for (int key = 0; key < 2; key++) {
+        for (int key = 0; key < len(this->keyPressed); key++) {
             if (this->keyPressed[key]) {
-                this->queue->add(key);
+                this->queue.add(key);
             }
         }
 
-        return this->queue->shift();
+        return this->queue.shift();
     }
 };
 
@@ -385,26 +371,26 @@ public:
     }
 };
 
-// StraightKeyer straightKeyer = StraightKeyer();
-// BugKeyer bugKeyer = BugKeyer();
-// ElBugKeyer elBugKeyer = ElBugKeyer();
-// SingleDotKeyer singleDotKeyer = SingleDotKeyer();
-// UltimaticKeyer ultimaticKeyer = UltimaticKeyer();
-// IambicKeyer iambicKeyer = IambicKeyer();
-// IambicAKeyer iambicAKeyer = IambicAKeyer();
-// IambicBKeyer iambicBKeyer = IambicBKeyer();
-// KeyaheadKeyer keyaheadKeyer = KeyaheadKeyer();
+StraightKeyer straightKeyer = StraightKeyer();
+BugKeyer bugKeyer = BugKeyer();
+ElBugKeyer elBugKeyer = ElBugKeyer();
+SingleDotKeyer singleDotKeyer = SingleDotKeyer();
+UltimaticKeyer ultimaticKeyer = UltimaticKeyer();
+IambicKeyer iambicKeyer = IambicKeyer();
+IambicAKeyer iambicAKeyer = IambicAKeyer();
+IambicBKeyer iambicBKeyer = IambicBKeyer();
+KeyaheadKeyer keyaheadKeyer = KeyaheadKeyer();
 
 Keyer *keyers[] = {
-    // &straightKeyer,
-    // &bugKeyer,
-    // &elBugKeyer,
-    // &singleDotKeyer,
-    // &ultimaticKeyer,
-    // &iambicKeyer,
-    // &iambicAKeyer,
-    // &iambicBKeyer,
-    // &keyaheadKeyer,
+    &straightKeyer,
+    &bugKeyer,
+    &elBugKeyer,
+    &singleDotKeyer,
+    &ultimaticKeyer,
+    &iambicKeyer,
+    &iambicAKeyer,
+    &iambicBKeyer,
+    &keyaheadKeyer,
 };
 
 Keyer *GetKeyerByNumber(int n, Transmitter *output) {
