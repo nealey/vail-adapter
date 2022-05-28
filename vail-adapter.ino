@@ -87,8 +87,11 @@ void setLED() {
 }
 
 void loop() {
+  unsigned now = millis();  
   midiEventPacket_t event = MidiUSB.read();
+
   setLED();
+  adapter.Tick(now);
 
   if (event.header) {
     adapter.HandleMIDI(event);
@@ -96,7 +99,7 @@ void loop() {
 
   // Monitor straight key pin
   if (key.update() || qt_key.update()) {
-    bool pressed = key.read() || qt_key.read();
+    bool pressed = !key.read() || qt_key.read();
     adapter.HandlePaddle(PADDLE_STRAIGHT, pressed);
   }
 
@@ -107,12 +110,12 @@ void loop() {
   }
 
   if (dit.update() || qt_dit.update()) {
-    bool pressed = dit.read() || qt_dit.read();
+    bool pressed = !dit.read() || qt_dit.read();
     adapter.HandlePaddle(PADDLE_DIT, pressed);
   }
   
   if (dah.update() || qt_dah.update()) {
-    bool pressed = dah.read() | qt_dah.read();
+    bool pressed = !dah.read() || qt_dah.read();
     adapter.HandlePaddle(PADDLE_DAH, pressed);
   }
 }

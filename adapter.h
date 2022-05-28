@@ -22,4 +22,5 @@ public:
     void HandleMIDI(midiEventPacket_t event);
     void BeginTx();
     void EndTx();
+    void Tick(unsigned millis);
 };

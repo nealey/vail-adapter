@@ -4,7 +4,7 @@
 
 typedef enum {
     PADDLE_DIT = 0,
-    PADDLE_DAH,
+    PADDLE_DAH = 1,
     PADDLE_STRAIGHT,
 } Paddle;
 
@@ -16,6 +16,7 @@ public:
 
 class Keyer {
 public:
+    virtual void SetOutput(Transmitter *output);
     virtual void Reset();
     virtual void SetDitDuration(int d);
     virtual void Release();

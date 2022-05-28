@@ -51,21 +51,28 @@ public:
     unsigned int ditDuration;
     bool txRelays[2];
 
-    StraightKeyer(Transmitter *output) {
-        this->output = output;
-        this->ditDuration = 100;
+    StraightKeyer() {
         this->Reset();
     }
 
+    void SetOutput(Transmitter *output) {
+        this->output = output;
+    }
+
     void Reset() {
-        this->output->EndTx();
+        if (this->output) {
+            this->output->EndTx();
+        }
+        this->ditDuration = 100;
     }
 
     void SetDitDuration(int duration) {
         this->ditDuration = duration;
     }
 
-    void Release() {}
+    void Release() {
+        this->Reset();
+    }
 
     bool TxClosed() {
         for (int i = 0; i < len(this->txRelays); i++) {
@@ -103,14 +110,14 @@ public:
 
 class BugKeyer: public StraightKeyer {
 public:
-    unsigned int pulseTime = 0;
+    unsigned int nextPulse = 0;
     bool keyPressed[2];
 
     using StraightKeyer::StraightKeyer;
 
     void Reset() {
         StraightKeyer::Reset();
-        this->pulseTime = 0;
+        this->nextPulse = 0;
         this->keyPressed[0] = false;
         this->keyPressed[1] = false;
     }
@@ -124,26 +131,26 @@ public:
         }
     }
 
-    void beginPulsing() {
-        this->pulseTime = 1;
+    void Tick(unsigned int millis) {
+        if (this->nextPulse && (millis >= this->nextPulse)) {
+            this->pulse(millis);
+        }
     }
 
-    void pulse(unsigned int millis) {
+    void beginPulsing() {
+        this->nextPulse = 1;
+    }
+
+    virtual void pulse(unsigned int millis) {
         if (this->TxClosed(0)) {
             this->Tx(0, false);
         } else if (this->keyPressed[0]) {
             this->Tx(0, true);
         } else {
-            this->pulseTime = 0;
+            this->nextPulse = 0;
             return;
         }
-        this->pulseTime = millis + this->ditDuration;
-    }
-
-    void Tick(unsigned int millis) {
-        if (this->pulseTime && (millis >= this->pulseTime)) {
-            this->pulse(millis);
-        }
+        this->nextPulse = millis + this->ditDuration;
     }
 };
 
@@ -172,34 +179,34 @@ public:
         this->keyPressed[key] = pressed;
         if (pressed) {
             this->nextRepeat = key;
+            this->beginPulsing();
         } else {
             this->nextRepeat = this->whichKeyPressed();
         }
-        this->beginPulsing();
     }
 
     unsigned int keyDuration(int key) {
         switch (key) {
-        case 0:
+        case PADDLE_DIT:
             return this->ditDuration;
-        case 1:
-            return 3 * this->ditDuration;
+        case PADDLE_DAH:
+            return 3 * (this->ditDuration);
         }
-        return 0;
+        return this->ditDuration; // XXX
     }
 
-    int nextTx() {
+    virtual int nextTx() {
         if (this->whichKeyPressed() == -1) {
             return -1;
         }
         return this->nextRepeat;
     }
 
-    void pulse(unsigned int millis) {
+    virtual void pulse(unsigned int millis) {
         int nextPulse = 0;
         if (this->TxClosed(0)) {
             // Pause if we're currently transmitting
-            nextPulse = this->ditDuration;
+            nextPulse = this->keyDuration(PADDLE_DIT);
             this->Tx(0, false);
         } else {
             int next = this->nextTx();
@@ -210,9 +217,9 @@ public:
         }
 
         if (nextPulse) {
-            this->pulseTime = millis + nextPulse;
+            this->nextPulse = millis + nextPulse;
         } else {
-            this->pulseTime = 0;
+            this->nextPulse = 0;
         }
     }
 };
@@ -235,7 +242,7 @@ public:
         ElBugKeyer::Key(key, pressed);
     }
 
-    int nextTx() {
+    virtual int nextTx() {
         int key = this->queue->shift();
         if (key != -1) {
             return key;
@@ -262,7 +269,7 @@ public:
         ElBugKeyer::Key(key, pressed);
     }
 
-    int nextTx() {
+    virtual int nextTx() {
         int key = this->queue->shift();
         if (key != -1) {
             return key;
@@ -278,7 +285,7 @@ public:
 
     using ElBugKeyer::ElBugKeyer;
 
-    int nextTx() {
+    virtual int nextTx() {
         int next = ElBugKeyer::nextTx();
         if (this->whichKeyPressed() != -1) {
             this->nextRepeat = 1 - this->nextRepeat;
@@ -305,7 +312,7 @@ public:
         IambicKeyer::Key(key, pressed);
     }
 
-    int nextTx() {
+    virtual int nextTx() {
         int next = IambicKeyer::nextTx();
         int key = this->queue->shift();
         if (key != -1) {
@@ -333,7 +340,7 @@ public:
         IambicKeyer::Key(key, pressed);
     }
 
-    int nextTx() {
+    virtual int nextTx() {
         for (int key = 0; key < 2; key++) {
             if (this->keyPressed[key]) {
                 this->queue->add(key);
@@ -365,7 +372,7 @@ public:
         ElBugKeyer::Key(key, pressed);
     }
 
-    int nextTx() {
+    virtual int nextTx() {
         if (this->qlen > 0) {
             int next = this->queue[0];
             this->qlen--;
@@ -378,27 +385,34 @@ public:
     }
 };
 
+// StraightKeyer straightKeyer = StraightKeyer();
+// BugKeyer bugKeyer = BugKeyer();
+// ElBugKeyer elBugKeyer = ElBugKeyer();
+// SingleDotKeyer singleDotKeyer = SingleDotKeyer();
+// UltimaticKeyer ultimaticKeyer = UltimaticKeyer();
+// IambicKeyer iambicKeyer = IambicKeyer();
+// IambicAKeyer iambicAKeyer = IambicAKeyer();
+// IambicBKeyer iambicBKeyer = IambicBKeyer();
+// KeyaheadKeyer keyaheadKeyer = KeyaheadKeyer();
+
+Keyer *keyers[] = {
+    // &straightKeyer,
+    // &bugKeyer,
+    // &elBugKeyer,
+    // &singleDotKeyer,
+    // &ultimaticKeyer,
+    // &iambicKeyer,
+    // &iambicAKeyer,
+    // &iambicBKeyer,
+    // &keyaheadKeyer,
+};
+
 Keyer *GetKeyerByNumber(int n, Transmitter *output) {
-    switch (n) {
-    case 1:
-        return new StraightKeyer(output);
-    case 2:
-        return new BugKeyer(output);
-    case 3:
-        return new ElBugKeyer(output);
-    case 4:
-        return new SingleDotKeyer(output);
-    case 5:
-        return new UltimaticKeyer(output);
-    case 6:
-        return new IambicKeyer(output);
-    case 7:
-        return new IambicAKeyer(output);
-    case 8:
-        return new IambicBKeyer(output);
-    case 9:
-        return new KeyaheadKeyer(output);
-    default:
+    if (n >= len(keyers)) {
         return NULL;
     }
+
+    Keyer *k = keyers[n];
+    k->SetOutput(output);
+    return k;
 }

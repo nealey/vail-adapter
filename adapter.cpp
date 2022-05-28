@@ -16,7 +16,7 @@ VailAdapter::VailAdapter(unsigned int PiezoPin) {
 
 // Send a MIDI Key Event
 void VailAdapter::midiKey(uint8_t key, bool down) {
-    midiEventPacket_t event = {down?9:8, down?0x90:0x80, key, 0x7f};
+    midiEventPacket_t event = {uint8_t(down?9:8), uint8_t(down?0x90:0x80), key, 0x7f};
     MidiUSB.sendMIDI(event);
     MidiUSB.flush();
 }
@@ -101,6 +101,9 @@ void VailAdapter::HandleMIDI(midiEventPacket_t event) {
         }
         break;
     case 0xC0: // Program Change
+        if (this->keyer) {
+            this->keyer->Release();
+        }
         this->keyer = GetKeyerByNumber(event.byte2, this);
         break;
     case 0x80: // Note off
@@ -109,5 +112,11 @@ void VailAdapter::HandleMIDI(midiEventPacket_t event) {
     case 0x90: // Note on
         this->buzzer->Note(1, event.byte2);
         break;
+    }
+}
+
+void VailAdapter::Tick(unsigned millis) {
+    if (this->keyer) {
+        this->keyer->Tick(millis);
     }
 }
