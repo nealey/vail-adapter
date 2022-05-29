@@ -31,11 +31,11 @@ public:
     }
 
     void add(int val) {
-        if (arrlen == MAX_KEYER_QUEUE-1) {
+        if (arrlen == MAX_KEYER_QUEUE) {
             return;
         }
         for (int i = 0; i < arrlen; i++) {
-            if (arr[arrlen] == val) {
+            if (arr[i] == val) {
                 return;
             }
         }
@@ -382,6 +382,7 @@ IambicBKeyer iambicBKeyer = IambicBKeyer();
 KeyaheadKeyer keyaheadKeyer = KeyaheadKeyer();
 
 Keyer *keyers[] = {
+    NULL,
     &straightKeyer,
     &bugKeyer,
     &elBugKeyer,
