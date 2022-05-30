@@ -35,8 +35,9 @@ difference() {
     translate([10, 0, 9]) cube([10, 18.36, 6], center=true);
 
 
-    translate([0, -9, 12]) rotate(90, [1, 0, 0]) tap("M4", turns=10);
-    translate([0, 12, 12]) rotate(90, [1, 0, 0]) tap("M4", turns=10);
+    translate([0, 0, 9.5]) rotate(90, [1, 0, 0]) cylinder(h=30, d=0.8, center=true);
+    translate([0, -9, 12]) rotate(90, [1, 0, 0]) tap("M4", turns=3);
+    translate([0, 11, 12]) rotate(90, [1, 0, 0]) tap("M4", turns=3);
 
-    translate([0, 0, 18]) rotate(90, [0, 1, 0]) tap("M8", turns=10); //cylinder(h=50, r=4);
+    translate([11, 0, 18]) rotate(90, [0, 1, 0]) tap("M6", turns=3); //cylinder(h=50, r=4);
 }
