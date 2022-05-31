@@ -58,10 +58,10 @@ difference() {
     translate([0, 0, 9.5]) cube([1, 30, 0.8], center=true);
 
     // 8-32x 1/4 screws
-    translate([0, 0, 12]) rotate(90, [1, 0, 0]) cylinder(h=30, d=3.8, center=true);
+    translate([0, 0, 12]) rotate(90, [1, 0, 0]) cylinder(h=30, d=4.0, center=true);
 
     // 3.5mm TRS jack
-    translate([10, 0, 18]) rotate(90, [0, 1, 0]) cylinder(h=3, d=5.5);
+    translate([10, 0, 18]) rotate(90, [0, 1, 0]) cylinder(h=3, d=6.0);
 
     // Piezo buzzer
     translate([-12, 3.5, 15]) cube([5, 1, 1], center=true);
