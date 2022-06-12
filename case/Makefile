@@ -1,4 +1,4 @@
-default: adapter-case.stl adapter-lid.stl
+default: body.stl cap.stl
 
-%.stl: %.scad
-	openscad -o $@ $<
+%.stl: case.scad
+	openscad -o $@ -D TARGET=\"$*\" $<
