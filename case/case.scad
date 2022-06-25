@@ -1,7 +1,7 @@
 // Make circles lovely and round
 $fa = 1; $fs = 0.1;
 
-outer_dimensions = [24.2, 21, 27];
+outer_dimensions = [24.2, 21, 25];
 outer_radius = 3.7;
 wall_width = [1.3, 1.3, 1.3];
 inner_dimensions = outer_dimensions - (wall_width * 2);
@@ -14,28 +14,21 @@ channel = [16, 1, 1]; // Difensions of cap channel
 channel_height = 2; // How far into the case the clips need to go
 cap_thickness = 1.3;
 
-// More information: https://danielupshaw.com/openscad-rounded-corners/
-module roundedcube_simple(size=[1, 1, 1], center=false, r=0.5) {
-	// If single value, convert to [x, y, z] vector
-	size = (size[0] == undef) ? [size, size, size] : size;
+module roundedcube(size=[1, 1, 1], center=false, r=0.5) {
+    size = (size[0]==undef) ? [size, size, size] : size;
+    cubeSize = [size[0] - 2*r, size[1] - 2*r, size[2]];
 
-	translate = (center == false) ?
-		[r, r, r] :
-		[
-			r - (size[0] / 2),
-			r - (size[1] / 2),
-			r - (size[2] / 2)
-	];
-
-	translate(v = translate)
-	minkowski() {
-		cube(size = [
-			size[0] - (r * 2),
-			size[1] - (r * 2),
-			size[2] - (r * 2)
-		]);
-		sphere(r = r);
-	}
+    translate(center ? [0,0,0] : size/2) {
+        union() {
+            cube([size[0], cubeSize[1], size[2]], center=true);
+            cube([cubeSize[0], size[1], size[2]], center=true);
+            for (ymul = [-0.5, 0.5]) {
+                for (xmul = [-0.5, 0.5]) {
+                    translate([cubeSize[0]*xmul, cubeSize[1]*ymul, 0]) cylinder(h=size[2], r=r, center=true);
+                }
+            }
+        }
+    }
 }
 
 module trs_support() {
@@ -54,10 +47,12 @@ module usb_c() {
 
 module case() {
     difference() {
-        translate((outer_dimensions * z_elevate) + ([0, 0, -1] * outer_radius)) difference() {
-            roundedcube_simple(outer_dimensions, center=true, r=outer_radius);
-            roundedcube_simple(inner_dimensions, center=true, r=inner_radius);
-            translate(-outer_dimensions/2) cube([100, 100, outer_radius]);
+        translate((outer_dimensions * z_elevate) + ([0, 0, -1] * cap_thickness)) {
+            difference() {
+                roundedcube(outer_dimensions, center=true, r=outer_radius);
+                roundedcube(inner_dimensions, center=true, r=inner_radius);
+                translate(-outer_dimensions/2) cube([100, 100, cap_thickness]);
+            }
         }
 
         // USB C port
@@ -86,7 +81,7 @@ module body() {
                         translate([-6, 0, xiao_elevation]) rotate(45, [0, 0, 1]) cube(15, center=true);
                     }
                 }
-                translate(outer_dimensions * center) roundedcube_simple(outer_dimensions, r=outer_radius);
+                translate(outer_dimensions * center) roundedcube(outer_dimensions, r=outer_radius);
             }
 
 
@@ -109,7 +104,7 @@ module body() {
         // Channel in the back to make it easier to squeeze in the XIAO
         translate([-4.5, 0, xiao_elevation]) intersection() {
             cube([13, 100, pcb_thickness], center=true);
-            roundedcube_simple(inner_dimensions, center=true, r=inner_radius);
+            roundedcube(inner_dimensions, center=true, r=cap_thickness);
         }
 
         // Channels for bottom insertion part thingy
@@ -143,11 +138,11 @@ module cap() {
     inner = inner_dimensions * 0.97; // leave 5% slop
     union() {
         intersection() {
-            roundedcube_simple(outer_dimensions, center=true, r=outer_radius);
+            roundedcube(outer_dimensions, center=true, r=outer_radius);
             translate([0, 0, cap_thickness/2]) cube([100, 100, cap_thickness], center=true);
         }
         intersection() {
-            roundedcube_simple(inner, center=true, r=inner_radius);
+            roundedcube(inner, center=true, r=inner_radius);
             translate(center * inner) cube([100, 100, cap_thickness+2.2]);
         }
         difference() {
@@ -175,7 +170,9 @@ if (TARGET == "body") {
     body();
 } else if (TARGET == "cap") {
     cap();
-} else {
+} else if (true == true) {
     color([0, 0.5, 0.5]) body();
     color([0.5, 0, 0.5]) translate([0, 0, -cap_thickness]) cap();
+} else {
+    roundedcube(10);
 }
