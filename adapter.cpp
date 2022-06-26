@@ -108,6 +108,7 @@ void VailAdapter::HandleMIDI(midiEventPacket_t event) {
             this->keyer->Release();
         }
         this->keyer = GetKeyerByNumber(event.byte2, this);
+        this->keyer->SetDitDuration(this->ditDuration);
         break;
     case 0x80: // Note off
         this->buzzer->NoTone(1);

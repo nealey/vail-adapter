@@ -66,7 +66,7 @@ public:
         this->ditDuration = 100;
     }
 
-    void SetDitDuration(int duration) {
+    void SetDitDuration(unsigned int duration) {
         this->ditDuration = duration;
     }
 

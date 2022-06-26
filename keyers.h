@@ -18,7 +18,7 @@ class Keyer {
 public:
     virtual void SetOutput(Transmitter *output);
     virtual void Reset();
-    virtual void SetDitDuration(int d);
+    virtual void SetDitDuration(unsigned int d);
     virtual void Release();
     virtual bool TxClosed();
     virtual bool TxClosed(int relay);

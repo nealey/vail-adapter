@@ -16,8 +16,8 @@ void PolyBuzzer::update() {
             if (playing != tones[i]) {
                 playing = tones[i];
                 tone(this->pin, tones[i]);
-                return;
             }
+            return;
         }
     }
     this->playing = 0;
