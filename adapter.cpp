@@ -10,6 +10,7 @@
 #define SECOND (1000 * MILLISECOND)
 
 VailAdapter::VailAdapter(unsigned int PiezoPin) {
+    this->keyboardMode = true;
     this->buzzer = new PolyBuzzer(PiezoPin);
     this->txToneFrequency = 440;
 }
