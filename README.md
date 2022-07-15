@@ -14,7 +14,9 @@ License: MIT
 * Lets you key even if you move focus to another window
 * Works with [Vail](https://vail.woozle.org/)
 * Works with [VBand](https://hamradio.solutions/vband/)
-* Optional sidetone generator for straight keying, which helps with latency
+* Optional sidetone generator, which helps with latency
+* Implements all nine keyer modes from Vail, in the adapter, so you lunatics can try to key at 50WPM with no latency issues
+* Plays received signals in the adapter, so you can turn off your computer speaker
 * Free firmware updates for life
 * Can be wired up in about 5 minutes
 
@@ -30,10 +32,7 @@ License: MIT
 
 Things I plan to add:
 
-* Local keyer logic for Ultimatic, Iambic, etc.
-* Local keyer generating sidetones
-* Vail site sends MIDI note events to the adapter, 
-  so you don't need your computer speaker on to listen.
+* PCB to ease assembly and make a more robust shippable product
 
 
 # Contributing
