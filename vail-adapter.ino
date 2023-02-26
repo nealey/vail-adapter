@@ -27,7 +27,6 @@
 #define MILLISECOND 1
 #define SECOND (1 * MILLISECOND)
 
-bool keyboard = true;
 bool trs = false; // true if a TRS plug is in a TRRS jack
 uint16_t iambicDelay = 80 * MILLISECOND;
 Bounce dit = Bounce();
@@ -69,7 +68,7 @@ void setup() {
 void setLED() {
   static bool beepin = false;
   int beat = millis() / iambicDelay;
-  bool on = keyboard; // If we're not in intro, display status of keyboard
+  bool on = adapter.KeyboardMode(); // If we're not in intro, display status of keyboard
 
   if (beat < 16) {
     on = HELLO_BITS & (1 << (15-beat));

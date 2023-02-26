@@ -10,9 +10,11 @@
 #define SECOND (1000 * MILLISECOND)
 
 VailAdapter::VailAdapter(unsigned int PiezoPin) {
-    this->keyboardMode = true;
     this->buzzer = new PolyBuzzer(PiezoPin);
-    this->txToneFrequency = 440;
+}
+
+bool VailAdapter::KeyboardMode() {
+    return this->keyboardMode;
 }
 
 // Send a MIDI Key Event
@@ -33,7 +35,7 @@ void VailAdapter::keyboardKey(uint8_t key, bool down) {
 
 // Begin transmitting
 void VailAdapter::BeginTx() {
-    this->buzzer->Tone(0, this->txToneFrequency);
+    this->buzzer->Note(0, this->txNote);
     if (this->keyboardMode) {
         this->keyboardKey(KEY_LEFT_CTRL, true);
     } else {
@@ -101,6 +103,9 @@ void VailAdapter::HandleMIDI(midiEventPacket_t event) {
                 if (this->keyer) {
                     this->keyer->SetDitDuration(this->ditDuration);
                 }
+                break;
+            case 2: // set tx note
+                this->txNote = event.byte3;
                 break;
         }
         break;

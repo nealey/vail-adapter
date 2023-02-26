@@ -6,9 +6,9 @@
 
 class VailAdapter: public Transmitter {
 private:
-    unsigned int txToneFrequency;
+    unsigned int txNote = 69;
     unsigned int ditDuration = 100;
-    bool keyboardMode = false;
+    bool keyboardMode = true;
     Keyer *keyer = NULL;
     PolyBuzzer *buzzer = NULL;
 
@@ -18,6 +18,7 @@ private:
 
 public:
     VailAdapter(unsigned int PiezoPin);
+    bool KeyboardMode();
     void HandlePaddle(Paddle key, bool pressed);
     void HandleMIDI(midiEventPacket_t event);
     void BeginTx();

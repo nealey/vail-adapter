@@ -15,6 +15,6 @@ public:
     PolyBuzzer(uint8_t pin);
     void update();
     void Tone(int slot, unsigned int frequency);
-    void Note(int slot, int note);
+    void Note(int slot, uint8_t note);
     void NoTone(int slot);
 };

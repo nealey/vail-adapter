@@ -32,7 +32,10 @@ License: MIT
 
 Things I plan to add:
 
-* PCB to ease assembly and make a more robust shippable product
+* [x] PCB to ease assembly and make a more robust shippable product
+* [ ] Debug tone changes
+* [ ] PCB v2 to get the speaker on pin 10 instead of pin 9
+* [ ] Unplug detection: send a pulse out one pin and detect it on the T pin to reset straight-key detection
 
 
 # Contributing
