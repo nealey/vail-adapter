@@ -1,10 +1,10 @@
 # Easy Installation
 
-1. Get a Seeeduino XIAO
-2. Download the most recent xiao firmware from
+1. Get a Seeeduino XIAO M0
+2. Download the most recent xiao m0 firmware from
 [releases](https://github.com/nealey/vail-adapter/releases)
 3. [Enter bootloader mode](https://wiki.seeedstudio.com/Seeeduino-XIAO/#enter-bootloader-mode)
-4. Copy the firmware onto the XIAO
+4. Copy the firmware onto the XIAO M0
 
 [Wideo walkthrough of firmware upload](https://www.youtube.com/watch?v=IgOdkUe5SMY) (3:07)
 

@@ -11,8 +11,8 @@ Then compile and upload the sketch.
 
 ## Works with no source code changes
 
-* Seeeduino Xiao
-* Adafruit Qt Py
+* Seeeduino Xiao M0
+* Adafruit Qt Py SAMD21
 
 ## Known to work with source code changes
 
@@ -23,6 +23,18 @@ Then compile and upload the sketch.
 * Adafruit Trinket M0
 * Adafruit GEMMA M0
 * Adafruit Feather M0
+
+## Will Not Work!
+
+The RP2040 chip will not work, because it lacks a USB MCU,
+needed by the MIDIUSB library. 
+I'm listing specific devices here
+in the hopes that seeing them crossed out will prevent people from
+making a purchasing mistake!
+
+* ~~Seeeduino Xiao RP2040~~ Will not work!
+* ~~Adafruit Qt Pi RP2040~~ Will not work!
+* ~~Any RP2040 Device~~ Will not work!
 
 
 # Advanced Wiring
