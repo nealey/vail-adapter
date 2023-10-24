@@ -11,7 +11,7 @@ Then compile and upload the sketch.
 
 ## Works with no source code changes
 
-* Seeeduino Xiao M0
+* Seeeduino Xiao SAMD21
 * Adafruit Qt Py SAMD21
 
 ## Known to work with source code changes
