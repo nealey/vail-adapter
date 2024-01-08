@@ -1,0 +1,19 @@
+name: vail-adapter
+on: [push]
+jobs:
+  build:
+    runs-on:
+      - arduino
+    env:
+      PACKAGE_API_TOKEN: ${PACKAGE_API_TOKEN}
+    steps:
+      - name: check out repository
+        run: git clone -b $GITHUB_REF_NAME $GITHUB_SERVER_URL/$GITHUB_REPOSITORY .
+      - name: build firmwares
+        run: make
+      - name: build zip file
+        run: make dist
+      - name: publish
+        env:
+          PACKAGE_API_TOKEN: ${{ secrets.PACKAGE_API_TOKEN }}
+        run: .gitea/publish.sh build/*.zip build/*.hex

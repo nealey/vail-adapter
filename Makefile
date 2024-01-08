@@ -1,15 +1,15 @@
 FQBN_qtpy = adafruit:samd:adafruit_qtpy_m0
 FQBN_xiao = Seeeduino:samd:seeed_XIAO_m0
 UF2_MOUNT = /mnt/chromeos/removable/Arduino
-ARDUINO_DIR = /app/Arduino
+ARDUINO_DIR = /usr/share/arduino
 BUILDER = flatpak run --command ${ARDUINO_DIR}/arduino-builder cc.arduino.arduinoide
 
-default: build/vail-adapter.qtpy.uf2 build/vail-adapter.xiao.uf2
-install: build/vail-adapter.xiao.uf2
+default: vail-adapter.qtpy.uf2 vail-adapter.xiao.uf2
+install: vail-adapter.xiao.uf2
 	./install.sh $< $(UF2_MOUNT) 
 
 clean:
-	rm -rf build/*
+	rm -rf build/
 
 # uf2conv.py is covered by an MIT license.
 build/uf2conv.py: build/uf2families.json
@@ -26,25 +26,30 @@ build/uf2families.json:
 %.qtpy.uf2: %.qtpy.bin build/uf2conv.py
 	build/uf2conv.py -b 0x2000 -c -o $@ $<
 
-build/%.qtpy.bin: FQBN = adafruit:samd:adafruit_qtpy_m0
-build/%.xiao.bin: FQBN = Seeeduino:samd:seeed_XIAO_m0
-build/vail-adapter.%.bin: vail-adapter.ino *.cpp *.h
-	mkdir -p build/$*
+%.qtpy.bin: FQBN = adafruit:samd:adafruit_qtpy_m0
+%.xiao.bin: FQBN = Seeeduino:samd:seeed_XIAO_m0
+vail-adapter.%.bin: vail-adapter.ino *.cpp *.h core-%/.done
+	mkdir -p build/cache
 	arduino-builder \
-		-build-cache ~/.cache/arduino \
-		-build-path build/$* \
+		-build-cache build/cache \
+		-build-path build/ \
 		-core-api-version 10813 \
 		-fqbn $(FQBN) \
-		-hardware ~/.arduino15/packages \
-		-tools $(ARDUINO_DIR)/tools-builder \
-		-tools ~/.arduino15/packages \
+		-tools $(ARDUINO_DIR)/tools \
+		-tools core-$*/ArduinoCore*/ \
 		-hardware $(ARDUINO_DIR)/hardware \
-		-hardware ~/.arduino15/packages \
+		-hardware core-$*/ArduinoCore* \
 		-built-in-libraries $(ARDUINO_DIR)/libraries \
-		-libraries ~/Arduino/libraries \
+		-built-in-libraries core-$*/ArduinoCore*/ \
 		-compile \
 		$<
-	mv build/$*/vail-adapter.ino.bin $@
+	mv build/vail-adapter.ino.bin $@
+
+core-xiao/.done:
+	mkdir -p $(dir $@)
+	curl -L https://github.com/Seeed-Studio/ArduinoCore-samd/releases/download/v1.8.5/ArduinoCore-samd-1.8.5.tar.bz2 | tar xj -C $(dir $@)
+	touch $@
+	
 	
 upload: vail-adapter.ino
 	arduino --upload --board $(FQBN) $<
