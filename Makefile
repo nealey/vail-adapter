@@ -5,8 +5,12 @@ ARDUINO_DIR = /app/Arduino
 BUILDER = flatpak run --command ${ARDUINO_DIR}/arduino-builder cc.arduino.arduinoide
 
 default: build/vail-adapter.qtpy.uf2 build/vail-adapter.xiao.uf2
-install: build/vail-adapter.xiao.uf2
+
+install: install-xiao
+install-xiao: build/vail-adapter.xiao.uf2
 	./install.sh $< $(UF2_MOUNT) 
+install-qtpy: build/vail-adapter.qtpy.uf2
+	./install.sh $< /mnt/chromeos/removable/QTPY_BOOT
 
 clean:
 	rm -rf build/*
