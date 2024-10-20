@@ -5,26 +5,18 @@
 typedef enum {
     PADDLE_DIT = 0,
     PADDLE_DAH = 1,
-    PADDLE_STRAIGHT,
 } Paddle;
-
-class Transmitter {
-public:
-    virtual void BeginTx();
-    virtual void EndTx();
-};
 
 class Keyer {
 public:
-    virtual void SetOutput(Transmitter *output);
-    virtual void Reset();
-    virtual void SetDitDuration(unsigned int d);
-    virtual void Release();
-    virtual bool TxClosed();
-    virtual bool TxClosed(int relay);
-    virtual void Tx(int relay, bool closed);
-    virtual void Key(Paddle key, bool pressed);
-    virtual void Tick(unsigned int millis);
+    virtual char *Name() = 0;
+    virtual void Reset() = 0;
+    virtual void SetDitDuration(unsigned int d) = 0;
+    virtual void Key(Paddle key, bool pressed) = 0;
+
+    // Tick updates internal state, 
+    // and returns whether the keyer is transmitting at time now.
+    virtual bool Tick(unsigned long now) = 0;
 };
 
-Keyer *GetKeyerByNumber(int n, Transmitter *output);
+Keyer *GetKeyerByNumber(int n);
