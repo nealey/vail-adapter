@@ -47,24 +47,31 @@ public:
 
 class StraightKeyer: public Keyer {
 public:
-    bool transmitting = false;
-    unsigned int ditDuration = 100;
+    Transmitter *output;
+    unsigned int ditDuration;
     bool txRelays[2];
 
     StraightKeyer() {
         this->Reset();
     }
 
-    char *Name() {
-      return "straight";
+    void SetOutput(Transmitter *output) {
+        this->output = output;
+    }
+
+    void Reset() {
+        if (this->output) {
+            this->output->EndTx();
+        }
+        this->ditDuration = 100;
     }
 
     void SetDitDuration(unsigned int duration) {
         this->ditDuration = duration;
     }
 
-    void Reset() {
-        this->transmitting = false;
+    void Release() {
+        this->Reset();
     }
 
     bool TxClosed() {
@@ -83,16 +90,22 @@ public:
     void Tx(int relay, bool closed) {
         bool wasClosed = this->TxClosed();
         this->txRelays[relay] = closed;
-        this->transmitting = this->TxClosed();
+        bool nowClosed = this->TxClosed();
+
+        if (wasClosed != nowClosed) {
+            if (nowClosed) {
+                this->output->BeginTx();
+            } else {
+                this->output->EndTx();
+            }
+        }
     }
 
     void Key(Paddle key, bool pressed) {
         this->Tx(key, pressed);
     }
 
-    bool Tick(unsigned long now) {
-      return this->transmitting;
-    }
+    void Tick(unsigned int millis) {};
 };
 
 class BugKeyer: public StraightKeyer {
@@ -101,10 +114,6 @@ public:
     bool keyPressed[2];
 
     using StraightKeyer::StraightKeyer;
-
-    char *Name() {
-      return "bug";
-    }
 
     void Reset() {
         StraightKeyer::Reset();
@@ -122,11 +131,10 @@ public:
         }
     }
 
-    bool Tick(unsigned long now) {
-        if (this->nextPulse && (now >= this->nextPulse)) {
-            this->pulse(now);
+    void Tick(unsigned int millis) {
+        if (this->nextPulse && (millis >= this->nextPulse)) {
+            this->pulse(millis);
         }
-        return this->transmitting;
     }
 
     void beginPulsing() {
@@ -135,7 +143,7 @@ public:
         }
     }
 
-    virtual void pulse(unsigned int now) {
+    virtual void pulse(unsigned int millis) {
         if (this->TxClosed(0)) {
             this->Tx(0, false);
         } else if (this->keyPressed[0]) {
@@ -144,7 +152,7 @@ public:
             this->nextPulse = 0;
             return;
         }
-        this->nextPulse = now + this->ditDuration;
+        this->nextPulse = millis + this->ditDuration;
     }
 };
 
@@ -153,10 +161,6 @@ public:
     unsigned int nextRepeat;
 
     using BugKeyer::BugKeyer;
-
-    char *Name() {
-      return "el bug";
-    }
 
     void Reset() {
         BugKeyer::Reset();
@@ -200,7 +204,7 @@ public:
         return this->nextRepeat;
     }
 
-    virtual void pulse(unsigned int now) {
+    virtual void pulse(unsigned int millis) {
         int nextPulse = 0;
         if (this->TxClosed(0)) {
             // Pause if we're currently transmitting
@@ -215,7 +219,7 @@ public:
         }
 
         if (nextPulse) {
-            this->nextPulse = now + nextPulse;
+            this->nextPulse = millis + nextPulse;
         } else {
             this->nextPulse = 0;
         }
@@ -227,10 +231,6 @@ public:
     QSet queue;
     
     using ElBugKeyer::ElBugKeyer;
-
-    char *Name() {
-      return "ultimatic";
-    }
 
     void Key(Paddle key, bool pressed) {
         if (pressed) {
@@ -253,11 +253,7 @@ public:
     QSet queue;
 
     using ElBugKeyer::ElBugKeyer;
-
-    char *Name() {
-      return "single dot";
-    }
-
+    
     void Key(Paddle key, bool pressed) {
         if (pressed && (key == PADDLE_DIT)) {
             this->queue.add(key);
@@ -278,11 +274,8 @@ public:
 
 class IambicKeyer: public ElBugKeyer {
 public:
-    using ElBugKeyer::ElBugKeyer;
 
-    char *Name() {
-      return "iambic plain";
-    }
+    using ElBugKeyer::ElBugKeyer;
 
     virtual int nextTx() {
         int next = ElBugKeyer::nextTx();
@@ -299,10 +292,6 @@ public:
 
     using IambicKeyer::IambicKeyer;
     
-    char *Name() {
-      return "iambic a";
-    }
-
     void Key(Paddle key, bool pressed) {
         if (pressed && (key == PADDLE_DIT)) {
             this->queue.add(key);
@@ -323,21 +312,15 @@ public:
 class IambicBKeyer: public IambicKeyer {
 public:
     QSet queue;
-    int sending;
 
     using IambicKeyer::IambicKeyer;
 
-    char *Name() {
-      return "iambic b";
-    }
-
     void Reset() {
-        this->sending = -1;
         IambicKeyer::Reset();
     }
 
     void Key(Paddle key, bool pressed) {
-        if (pressed && (this->sending != key)) {
+        if (pressed) {
             this->queue.add(key);
         }
         IambicKeyer::Key(key, pressed);
@@ -350,8 +333,7 @@ public:
             }
         }
 
-        this->sending = this->queue.shift();
-        return this->sending;
+        return this->queue.shift();
     }
 };
 
@@ -361,10 +343,6 @@ public:
     unsigned int qlen;
 
     using ElBugKeyer::ElBugKeyer;
-
-    char *Name() {
-      return "keyahead";
-    }
 
     void Reset() {
         ElBugKeyer::Reset();
@@ -403,7 +381,8 @@ IambicAKeyer iambicAKeyer = IambicAKeyer();
 IambicBKeyer iambicBKeyer = IambicBKeyer();
 KeyaheadKeyer keyaheadKeyer = KeyaheadKeyer();
 
-Keyer *AllKeyers[] = {
+Keyer *keyers[] = {
+    NULL,
     &straightKeyer,
     &bugKeyer,
     &elBugKeyer,
@@ -415,10 +394,12 @@ Keyer *AllKeyers[] = {
     &keyaheadKeyer,
 };
 
-Keyer *GetKeyerByNumber(int n) {
-  if (n >= len(AllKeyers)) {
-    return NULL;
-  }
+Keyer *GetKeyerByNumber(int n, Transmitter *output) {
+    if (n >= len(keyers)) {
+        return NULL;
+    }
 
-  return AllKeyers[n];
+    Keyer *k = keyers[n];
+    k->SetOutput(output);
+    return k;
 }
